@@ -35,6 +35,7 @@ export interface Skill {
   id: string;
   name: string;
   category: SkillCategory;
+  is_active: boolean;
   created_at: string;
 }
 
@@ -51,6 +52,7 @@ export interface Interest {
   id: string;
   name: string;
   category: InterestCategory;
+  is_active: boolean;
   created_at: string;
 }
 
@@ -144,18 +146,21 @@ export type Database = {
           id: string;
           name: string;
           category: string;
+          is_active: boolean;
           created_at: string;
         };
         Insert: {
           id?: string;
           name: string;
           category: string;
+          is_active?: boolean;
           created_at?: string;
         };
         Update: {
           id?: string;
           name?: string;
           category?: string;
+          is_active?: boolean;
           created_at?: string;
         };
         Relationships: [];
@@ -201,18 +206,21 @@ export type Database = {
           id: string;
           name: string;
           category: string;
+          is_active: boolean;
           created_at: string;
         };
         Insert: {
           id?: string;
           name: string;
           category: string;
+          is_active?: boolean;
           created_at?: string;
         };
         Update: {
           id?: string;
           name?: string;
           category?: string;
+          is_active?: boolean;
           created_at?: string;
         };
         Relationships: [];

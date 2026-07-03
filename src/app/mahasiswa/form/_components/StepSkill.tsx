@@ -99,6 +99,7 @@ export default function StepSkill({ data, onChange, newSkills, onNewSkillsChange
         const { data: rows, error } = await supabase
           .from("skills")
           .select("id, name, category")
+          .eq("is_active", true)
           .order("name");
 
         if (error) throw error;

@@ -93,6 +93,7 @@ export default function StepMinat({ data, onChange, newInterests, onNewInterests
         const { data: rows, error } = await supabase
           .from("interests")
           .select("id, name, category")
+          .eq("is_active", true)
           .order("name");
 
         if (error) throw error;

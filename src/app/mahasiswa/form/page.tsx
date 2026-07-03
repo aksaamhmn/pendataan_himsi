@@ -55,6 +55,51 @@ export default async function FormPage({
     .eq("nim", nrp)
     .single();
 
+  // ─── Cek Status Form Terbuka/Tertutup ──────────────────────
+  const { data: setting } = await (supabase as any)
+    .from("app_settings")
+    .select("setting_value")
+    .eq("setting_key", "is_form_open")
+    .single();
+
+  const isFormOpen = setting?.setting_value === true;
+
+  // ─── Blocker State: Form Tertutup (bukan mode edit) ────────
+  if (!isFormOpen && !isEditMode) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh]">
+        <Card className="max-w-md w-full text-center p-8">
+          <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-yellow-100 border border-yellow-200 flex items-center justify-center">
+            <svg
+              className="w-8 h-8 text-yellow-600"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={2}
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"
+              />
+            </svg>
+          </div>
+          <h2 className="text-xl font-bold text-gray-900 mb-2">
+            Formulir Ditutup
+          </h2>
+          <p className="text-gray-500 mb-8">
+            Periode pendataan telah ditutup. Hubungi admin PSDM untuk informasi lebih lanjut.
+          </p>
+          <Link href="/mahasiswa/dashboard" className="block w-full">
+            <Button variant="primary" className="w-full">
+              Kembali ke Dashboard
+            </Button>
+          </Link>
+        </Card>
+      </div>
+    );
+  }
+
   // ─── Mode Edit: Hydrate form dengan data lama ────────────────
   if (isEditMode && student) {
     const skillsList = (student.student_skills as unknown as any[]) || [];
