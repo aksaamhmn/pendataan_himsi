@@ -24,7 +24,8 @@ export default function MasterDataPanel() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState("");
 
-  // Pagination state
+  // Pagination & Filter state
+  const [filterCategory, setFilterCategory] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 10;
 
@@ -52,6 +53,7 @@ export default function MasterDataPanel() {
     setNewItemCategory("");
     setEditingId(null);
     setCurrentPage(1);
+    setFilterCategory("all");
   }, [activeTab]);
 
   const handleAdd = async (e: React.FormEvent) => {
@@ -118,8 +120,12 @@ export default function MasterDataPanel() {
     ? [{ val: "hard_skill", label: "Hard Skill" }, { val: "soft_skill", label: "Soft Skill" }]
     : [{ val: "akademik", label: "Akademik" }, { val: "non_akademik", label: "Non Akademik" }];
 
-  const totalPages = Math.max(1, Math.ceil(items.length / ITEMS_PER_PAGE));
-  const currentData = items.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
+  const filteredItems = filterCategory === "all"
+    ? items
+    : items.filter((item) => item.category === filterCategory);
+
+  const totalPages = Math.max(1, Math.ceil(filteredItems.length / ITEMS_PER_PAGE));
+  const currentData = filteredItems.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
 
   return (
     <div className="rounded-xl border border-gray-200 bg-white shadow-sm mt-6 overflow-hidden">
@@ -181,6 +187,32 @@ export default function MasterDataPanel() {
             Tambah
           </button>
         </form>
+
+        {/* Filter Tabel */}
+        <div className="flex justify-between items-center mb-4">
+          <h4 className="text-sm font-medium text-gray-700">
+            Daftar {activeTab === "skills" ? "Keterampilan" : "Minat"}
+          </h4>
+          <div className="flex items-center gap-2">
+            <label htmlFor="filter-kategori" className="text-sm text-gray-500">Filter:</label>
+            <select
+              id="filter-kategori"
+              value={filterCategory}
+              onChange={(e) => {
+                setFilterCategory(e.target.value);
+                setCurrentPage(1);
+              }}
+              className="rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-500 text-sm py-1.5"
+            >
+              <option value="all">Semua Kategori</option>
+              {categories.map((c) => (
+                <option key={c.val} value={c.val}>
+                  {c.label}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
 
         {/* Tabel Data */}
         <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
@@ -284,7 +316,7 @@ export default function MasterDataPanel() {
         </div>
 
         {/* Pagination Controls */}
-        {items.length > 0 && (
+        {filteredItems.length > 0 && (
           <div className="mt-4 flex items-center justify-between bg-white px-4 py-3 border border-gray-200 rounded-lg shadow-sm">
             <button
               onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
