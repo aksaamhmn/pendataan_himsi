@@ -24,6 +24,10 @@ export default function MasterDataPanel() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState("");
 
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 10;
+
   const supabase = createClient();
 
   const fetchItems = async () => {
@@ -47,6 +51,7 @@ export default function MasterDataPanel() {
     setNewItemName("");
     setNewItemCategory("");
     setEditingId(null);
+    setCurrentPage(1);
   }, [activeTab]);
 
   const handleAdd = async (e: React.FormEvent) => {
@@ -112,6 +117,9 @@ export default function MasterDataPanel() {
   const categories = activeTab === "skills" 
     ? [{ val: "hard_skill", label: "Hard Skill" }, { val: "soft_skill", label: "Soft Skill" }]
     : [{ val: "akademik", label: "Akademik" }, { val: "non_akademik", label: "Non Akademik" }];
+
+  const totalPages = Math.max(1, Math.ceil(items.length / ITEMS_PER_PAGE));
+  const currentData = items.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
 
   return (
     <div className="rounded-xl border border-gray-200 bg-white shadow-sm mt-6 overflow-hidden">
@@ -213,7 +221,7 @@ export default function MasterDataPanel() {
                   </td>
                 </tr>
               ) : (
-                items.map((item) => (
+                currentData.map((item) => (
                   <tr key={item.id} className={item.is_active ? "" : "bg-gray-50"}>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {editingId === item.id ? (
@@ -274,6 +282,29 @@ export default function MasterDataPanel() {
             </tbody>
           </table>
         </div>
+
+        {/* Pagination Controls */}
+        {items.length > 0 && (
+          <div className="mt-4 flex items-center justify-between bg-white px-4 py-3 border border-gray-200 rounded-lg shadow-sm">
+            <button
+              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+              className="px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              Sebelumnya
+            </button>
+            <span className="text-sm text-gray-600">
+              Halaman <span className="font-semibold text-gray-900">{currentPage}</span> dari <span className="font-semibold text-gray-900">{totalPages}</span>
+            </span>
+            <button
+              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages}
+              className="px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              Selanjutnya
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
