@@ -1,18 +1,19 @@
 "use client";
 
 /**
- * FormPageClient — Halaman utama formulir pendataan PSDM HIMASI.
+ * FormPageClient — Halaman utama formulir pendataan PSDM HIMSI.
  * Komponen client yang mengorkestrasi multi-step form.
  */
 
 import { useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { useMultiStepForm, STEP_LABELS } from "@/hooks/useMultiStepForm";
 import Button from "@/components/ui/Button";
 import StepBiodata from "./StepBiodata";
 import StepMinat from "./StepMinat";
 import StepSkill from "./StepSkill";
 import StepAspirasi from "./StepAspirasi";
-import type { FormBiodata, FormInterestEntry, FormSkillEntry, FormAspiration } from "@/types/database";
+import type { FormData, FormBiodata, FormInterestEntry, FormSkillEntry, FormAspiration, NewInterestEntry, NewSkillEntry } from "@/types/database";
 
 /** Icons untuk step indicator */
 const STEP_ICON_PATHS = [
@@ -28,8 +29,15 @@ const STEP_ICON_PATHS = [
 
 type SubmitStatus = "idle" | "submitting" | "success" | "error";
 
-export default function FormPageClient() {
-  const form = useMultiStepForm();
+interface FormPageClientProps {
+  sessionNim: string;
+  initialData?: FormData;
+}
+
+export default function FormPageClient({ sessionNim, initialData }: FormPageClientProps) {
+  const router = useRouter();
+  const isEdit = !!initialData;
+  const form = useMultiStepForm(sessionNim, initialData);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitStatus, setSubmitStatus] = useState<SubmitStatus>("idle");
   const [submitError, setSubmitError] = useState("");
@@ -54,21 +62,23 @@ export default function FormPageClient() {
 
   const validateMinat = useCallback((): boolean => {
     const errs: Record<string, string> = {};
-    if (form.formData.interests.length === 0) {
+    const totalInterests = form.formData.interests.length + form.formData.newInterests.length;
+    if (totalInterests === 0) {
       errs.interests = "Pilih minimal satu minat";
     }
     setErrors(errs);
     return Object.keys(errs).length === 0;
-  }, [form.formData.interests]);
+  }, [form.formData.interests, form.formData.newInterests]);
 
   const validateSkill = useCallback((): boolean => {
     const errs: Record<string, string> = {};
-    if (form.formData.skills.length === 0) {
+    const totalSkills = form.formData.skills.length + form.formData.newSkills.length;
+    if (totalSkills === 0) {
       errs.skills = "Pilih minimal satu keterampilan";
     }
     setErrors(errs);
     return Object.keys(errs).length === 0;
-  }, [form.formData.skills]);
+  }, [form.formData.skills, form.formData.newSkills]);
 
   // ─── Navigation ──────────────────────────────────────────────
 
@@ -106,18 +116,23 @@ export default function FormPageClient() {
       const res = await fetch("/api/form", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form.formData),
+        body: JSON.stringify({ ...form.formData, isEdit }),
       });
 
-      const data = await res.json();
+      let data;
+      try {
+        data = await res.json();
+      } catch (parseError) {
+        throw new Error("Gagal memproses respons dari server. Silakan coba lagi.");
+      }
 
       if (!res.ok) {
-        throw new Error(data.error || "Terjadi kesalahan");
+        throw new Error(data.error || "Gagal menghubungi server. Silakan periksa koneksi Anda.");
       }
 
       setSubmitStatus("success");
     } catch (err) {
-      setSubmitError(err instanceof Error ? err.message : "Terjadi kesalahan saat mengirim data");
+      setSubmitError(err instanceof Error ? err.message : "Terjadi kesalahan yang tidak diketahui.");
       setSubmitStatus("error");
     }
   }, [form.formData]);
@@ -144,6 +159,16 @@ export default function FormPageClient() {
     [form]
   );
 
+  const handleNewInterestsChange = useCallback(
+    (newInterests: NewInterestEntry[]) => form.updateFormData({ newInterests }),
+    [form]
+  );
+
+  const handleNewSkillsChange = useCallback(
+    (newSkills: NewSkillEntry[]) => form.updateFormData({ newSkills }),
+    [form]
+  );
+
   // ─── Success Screen ─────────────────────────────────────────
 
   if (submitStatus === "success") {
@@ -159,11 +184,13 @@ export default function FormPageClient() {
             </div>
 
             <h2 className="text-2xl font-bold text-gray-900 mb-2">
-              Data Berhasil Disimpan! 🎉
+              {isEdit ? "Profil Berhasil Diperbarui!" : "Data Berhasil Disimpan!"}
             </h2>
             <p className="text-gray-500 mb-6">
-              Terima kasih telah mengisi formulir pendataan PSDM HIMASI.
-              Data minat, keterampilan, dan aspirasimu sudah tercatat.
+              {isEdit
+                ? "Data profil, keterampilan, dan minatmu sudah diperbarui."
+                : "Terima kasih telah mengisi formulir pendataan PSDM HIMASI. Data minat, keterampilan, dan aspirasimu sudah tercatat."
+              }
             </p>
 
             <div className="bg-gray-50 rounded-xl p-4 mb-6 border border-gray-200">
@@ -174,16 +201,15 @@ export default function FormPageClient() {
             </div>
 
             <Button
-              variant="secondary"
+              variant="primary"
               size="lg"
-              className="w-full"
+              className="w-full bg-yellow-400 hover:bg-yellow-500 text-gray-900 border-none"
               onClick={() => {
-                form.resetForm();
-                setSubmitStatus("idle");
-                setErrors({});
+                router.push("/mahasiswa/profile");
+                router.refresh();
               }}
             >
-              Isi Formulir Baru
+              Lihat Profile Saya
             </Button>
           </div>
         </div>
@@ -206,7 +232,7 @@ export default function FormPageClient() {
             </div>
             <div>
               <h1 className="text-sm font-semibold text-gray-900">Formulir Pendataan</h1>
-              <p className="text-xs text-gray-500">PSDM HIMASI</p>
+              <p className="text-xs text-gray-500">PSDM HIMSI</p>
             </div>
           </div>
         </div>
@@ -281,6 +307,8 @@ export default function FormPageClient() {
             <StepMinat
               data={form.formData.interests}
               onChange={handleInterestsChange}
+              newInterests={form.formData.newInterests}
+              onNewInterestsChange={handleNewInterestsChange}
               errors={errors}
             />
           )}
@@ -288,6 +316,8 @@ export default function FormPageClient() {
             <StepSkill
               data={form.formData.skills}
               onChange={handleSkillsChange}
+              newSkills={form.formData.newSkills}
+              onNewSkillsChange={handleNewSkillsChange}
               errors={errors}
             />
           )}
@@ -311,7 +341,7 @@ export default function FormPageClient() {
               <svg className="w-4 h-4 text-red-500 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
               </svg>
-              <p className="text-sm text-red-700">{submitError}</p>
+              <p className="text-sm text-red-700">Gagal: {submitError}</p>
             </div>
           )}
 

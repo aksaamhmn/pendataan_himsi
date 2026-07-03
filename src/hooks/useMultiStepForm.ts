@@ -1,26 +1,31 @@
 /**
  * Multi-Step Form — Custom Hook
  * Mengelola state navigasi form multi-step (step aktif, next, prev, dll.)
+ * Mendukung initialData untuk mode edit (data hydration).
  */
 
 import { useState, useCallback } from "react";
 import type { FormData } from "@/types/database";
 
 /** State awal form kosong */
-const initialFormData: FormData = {
-  biodata: {
-    nim: "",
-    nama: "",
-    angkatan: new Date().getFullYear(),
-    email: "",
-    whatsapp: "",
-  },
-  skills: [],
-  interests: [],
-  aspiration: {
-    feedback_text: "",
-  },
-};
+function createInitialFormData(initialNim: string = ""): FormData {
+  return {
+    biodata: {
+      nim: initialNim,
+      nama: "",
+      angkatan: new Date().getFullYear(),
+      email: "",
+      whatsapp: "",
+    },
+    skills: [],
+    interests: [],
+    aspiration: {
+      feedback_text: "",
+    },
+    newInterests: [],
+    newSkills: [],
+  };
+}
 
 /** Total jumlah step dalam form */
 const TOTAL_STEPS = 4;
@@ -72,9 +77,14 @@ export interface UseMultiStepFormReturn {
   resetForm: () => void;
 }
 
-export function useMultiStepForm(): UseMultiStepFormReturn {
+export function useMultiStepForm(
+  initialNim: string = "",
+  initialData?: FormData
+): UseMultiStepFormReturn {
   const [currentStep, setCurrentStep] = useState(0);
-  const [formData, setFormData] = useState<FormData>(initialFormData);
+  const [formData, setFormData] = useState<FormData>(
+    () => initialData || createInitialFormData(initialNim)
+  );
 
   const isFirstStep = currentStep === 0;
   const isLastStep = currentStep === TOTAL_STEPS - 1;
@@ -101,8 +111,8 @@ export function useMultiStepForm(): UseMultiStepFormReturn {
 
   const resetForm = useCallback(() => {
     setCurrentStep(0);
-    setFormData(initialFormData);
-  }, []);
+    setFormData(initialData || createInitialFormData(initialNim));
+  }, [initialNim, initialData]);
 
   return {
     currentStep,

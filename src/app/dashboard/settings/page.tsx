@@ -5,8 +5,8 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Pengaturan — PSDM HIMASI",
-  description: "Pengaturan dashboard admin PSDM HIMASI.",
+  title: "Pengaturan — PSDM HIMSI",
+  description: "Pengaturan dashboard admin PSDM HIMSI.",
 };
 
 export default function SettingsPage() {

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import DashboardShell from "./_components/DashboardShell";
 
 export const metadata: Metadata = {
-  title: "Dashboard Admin — PSDM HIMASI",
+  title: "Dashboard Admin — PSDM HIMSI",
   description: "Dashboard rekapitulasi data minat, bakat, dan skills mahasiswa Sistem Informasi.",
 };
 

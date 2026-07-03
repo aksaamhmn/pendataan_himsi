@@ -1,5 +1,6 @@
 /**
- * RecentTable — Tabel 5-10 pendaftar terakhir (server-rendered).
+ * RecentTable — Tabel 8 pendaftar terakhir (server-rendered).
+ * Kolom: Nama, NIM, Angkatan, Tanggal (dengan jam).
  */
 
 import type { StudentWithRelations } from "@/lib/data/dashboard";
@@ -8,12 +9,14 @@ interface RecentTableProps {
   students: StudentWithRelations[];
 }
 
-function formatDate(iso: string): string {
+function formatDateTime(iso: string): string {
   try {
-    return new Date(iso).toLocaleDateString("id-ID", {
+    return new Date(iso).toLocaleString("id-ID", {
       day: "numeric",
       month: "short",
       year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   } catch {
     return iso;
@@ -47,7 +50,6 @@ export default function RecentTable({ students }: RecentTableProps) {
                 <th className="text-left px-5 py-3 text-xs font-medium text-gray-600 uppercase tracking-wider">Nama</th>
                 <th className="text-left px-5 py-3 text-xs font-medium text-gray-600 uppercase tracking-wider hidden sm:table-cell">NIM</th>
                 <th className="text-left px-5 py-3 text-xs font-medium text-gray-600 uppercase tracking-wider hidden md:table-cell">Angkatan</th>
-                <th className="text-left px-5 py-3 text-xs font-medium text-gray-600 uppercase tracking-wider hidden lg:table-cell">Skills</th>
                 <th className="text-left px-5 py-3 text-xs font-medium text-gray-600 uppercase tracking-wider">Tanggal</th>
               </tr>
             </thead>
@@ -64,29 +66,8 @@ export default function RecentTable({ students }: RecentTableProps) {
                       {student.angkatan}
                     </span>
                   </td>
-                  <td className="px-5 py-3 hidden lg:table-cell">
-                    <div className="flex gap-1 flex-wrap max-w-[200px]">
-                      {student.skills.slice(0, 3).map((skill, i) => (
-                        <span
-                          key={i}
-                          className={`
-                            inline-flex px-1.5 py-0.5 rounded text-[10px] font-medium
-                            ${skill.category === "hard_skill"
-                              ? "bg-blue-50 text-blue-600 border border-blue-200"
-                              : "bg-yellow-50 text-yellow-600 border border-yellow-200"
-                            }
-                          `}
-                        >
-                          {skill.name.length > 15 ? skill.name.slice(0, 15) + "…" : skill.name}
-                        </span>
-                      ))}
-                      {student.skills.length > 3 && (
-                        <span className="text-[10px] text-gray-500">+{student.skills.length - 3}</span>
-                      )}
-                    </div>
-                  </td>
                   <td className="px-5 py-3 text-xs text-gray-500 whitespace-nowrap">
-                    {formatDate(student.created_at)}
+                    {formatDateTime(student.created_at)}
                   </td>
                 </tr>
               ))}

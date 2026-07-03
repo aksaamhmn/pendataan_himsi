@@ -8,11 +8,13 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
-import type { FormSkillEntry, SkillCategory, SkillLevel } from "@/types/database";
+import type { FormSkillEntry, SkillCategory, SkillLevel, NewSkillEntry } from "@/types/database";
 
 interface StepSkillProps {
   data: FormSkillEntry[];
   onChange: (data: FormSkillEntry[]) => void;
+  newSkills: NewSkillEntry[];
+  onNewSkillsChange: (data: NewSkillEntry[]) => void;
   errors: Record<string, string>;
 }
 
@@ -82,9 +84,13 @@ const CATEGORY_CONFIG = {
   },
 };
 
-export default function StepSkill({ data, onChange, errors }: StepSkillProps) {
+export default function StepSkill({ data, onChange, newSkills, onNewSkillsChange, errors }: StepSkillProps) {
   const [skills, setSkills] = useState<SkillOption[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [customInputs, setCustomInputs] = useState<Record<string, { name: string; level: SkillLevel }>>({
+    hard_skill: { name: "", level: "pemula" },
+    soft_skill: { name: "", level: "pemula" },
+  });
 
   useEffect(() => {
     async function fetchSkills() {
@@ -140,8 +146,32 @@ export default function StepSkill({ data, onChange, errors }: StepSkillProps) {
     [data, onChange]
   );
 
+  const addCustomSkill = useCallback(
+    (category: SkillCategory) => {
+      const input = customInputs[category];
+      const name = input?.name?.trim();
+      if (!name) return;
+      const exists = newSkills.some(
+        (ns) => ns.name.toLowerCase() === name.toLowerCase() && ns.category === category
+      );
+      if (exists) return;
+      onNewSkillsChange([...newSkills, { name, category, level: input.level }]);
+      setCustomInputs((prev) => ({ ...prev, [category]: { name: "", level: "pemula" } }));
+    },
+    [customInputs, newSkills, onNewSkillsChange]
+  );
+
+  const removeCustomSkill = useCallback(
+    (index: number) => {
+      onNewSkillsChange(newSkills.filter((_, i) => i !== index));
+    },
+    [newSkills, onNewSkillsChange]
+  );
+
   const hardSkills = skills.filter((s) => s.category === "hard_skill");
   const softSkills = skills.filter((s) => s.category === "soft_skill");
+
+  const totalSelected = data.length + newSkills.length;
 
   if (isLoading) {
     return (
@@ -166,7 +196,7 @@ export default function StepSkill({ data, onChange, errors }: StepSkillProps) {
         </div>
         <h2 className="text-xl font-semibold text-gray-900">Keterampilan</h2>
         <p className="text-sm text-gray-500 mt-1">
-          Pilih skill yang kamu miliki, lalu tentukan level penguasaanmu.
+          Pilih skill yang kamu miliki, lalu tentukan level penguasaanmu. Atau tambahkan sendiri.
         </p>
         {errors.skills && (
           <p className="text-sm text-red-500 mt-2 flex items-center gap-1.5">
@@ -179,13 +209,13 @@ export default function StepSkill({ data, onChange, errors }: StepSkillProps) {
       </div>
 
       {/* Selected counter */}
-      {data.length > 0 && (
+      {totalSelected > 0 && (
         <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-green-50 border border-green-200">
           <svg className="w-4 h-4 text-green-600" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
           </svg>
           <span className="text-sm text-green-700">
-            <span className="font-semibold">{data.length}</span> keterampilan dipilih
+            <span className="font-semibold">{totalSelected}</span> keterampilan dipilih
           </span>
         </div>
       )}
@@ -194,6 +224,7 @@ export default function StepSkill({ data, onChange, errors }: StepSkillProps) {
       {(["hard_skill", "soft_skill"] as const).map((category) => {
         const config = CATEGORY_CONFIG[category];
         const items = category === "hard_skill" ? hardSkills : softSkills;
+        const customForCategory = newSkills.filter((ns) => ns.category === category);
 
         return (
           <div key={category} className={`rounded-xl border ${config.border} bg-gradient-to-br ${config.gradient} p-4 bg-white/50`}>
@@ -265,6 +296,80 @@ export default function StepSkill({ data, onChange, errors }: StepSkillProps) {
                   </div>
                 );
               })}
+
+              {/* Custom skill badges */}
+              {customForCategory.map((cs, idx) => {
+                const globalIdx = newSkills.findIndex(
+                  (ns) => ns.name === cs.name && ns.category === cs.category
+                );
+                const levelOption = LEVEL_OPTIONS.find((l) => l.value === cs.level);
+                return (
+                  <div
+                    key={`custom-${idx}`}
+                    className="flex items-center justify-between px-3.5 py-2.5 rounded-lg border-2 border-dashed border-yellow-500 bg-yellow-50"
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium text-yellow-800">{cs.name}</span>
+                      <span className="text-xs text-yellow-600">{levelOption?.icon} {levelOption?.label}</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => removeCustomSkill(globalIdx)}
+                      className="w-5 h-5 rounded-full flex items-center justify-center hover:bg-yellow-200 transition-colors text-yellow-700"
+                    >
+                      <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Custom input "Lainnya" */}
+            <div className="mt-3 flex gap-2 items-end">
+              <div className="flex-1">
+                <input
+                  type="text"
+                  placeholder="Tambah skill lainnya..."
+                  value={customInputs[category]?.name || ""}
+                  onChange={(e) =>
+                    setCustomInputs((prev) => ({
+                      ...prev,
+                      [category]: { ...prev[category], name: e.target.value },
+                    }))
+                  }
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      addCustomSkill(category);
+                    }
+                  }}
+                  className="w-full px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400"
+                />
+              </div>
+              <select
+                value={customInputs[category]?.level || "pemula"}
+                onChange={(e) =>
+                  setCustomInputs((prev) => ({
+                    ...prev,
+                    [category]: { ...prev[category], level: e.target.value as SkillLevel },
+                  }))
+                }
+                className="px-2 py-2 rounded-lg border border-gray-300 bg-white text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400"
+              >
+                <option value="pemula">Pemula</option>
+                <option value="menengah">Menengah</option>
+                <option value="mahir">Mahir</option>
+              </select>
+              <button
+                type="button"
+                onClick={() => addCustomSkill(category)}
+                disabled={!customInputs[category]?.name?.trim()}
+                className="px-3 py-2 rounded-lg bg-yellow-400 text-gray-900 text-sm font-semibold hover:bg-yellow-500 transition-colors disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap"
+              >
+                + Tambah
+              </button>
             </div>
           </div>
         );

@@ -15,10 +15,10 @@ interface StepAspirasiProps {
   errors: Record<string, string>;
 }
 
-const LEVEL_LABELS: Record<string, { label: string; icon: string }> = {
-  pemula: { label: "Pemula", icon: "🌱" },
-  menengah: { label: "Menengah", icon: "🔥" },
-  mahir: { label: "Mahir", icon: "⚡" },
+const LEVEL_LABELS: Record<string, { label: string; }> = {
+  pemula: { label: "Pemula"},
+  menengah: { label: "Menengah"},
+  mahir: { label: "Mahir"},
 };
 
 export default function StepAspirasi({
@@ -62,12 +62,12 @@ export default function StepAspirasi({
       {/* Textarea Aspirasi */}
       <div className="space-y-1.5">
         <label htmlFor="aspirasi" className="block text-sm font-medium text-gray-700">
-          Aspirasi / Feedback untuk PSDM HIMASI
+          Aspirasi / Feedback untuk PSDM HIMSI
         </label>
         <textarea
           id="aspirasi"
           rows={4}
-          placeholder="Tuliskan aspirasi, masukan, harapan, atau saranmu untuk pengembangan divisi PSDM dan HIMASI ke depannya..."
+          placeholder="Tuliskan aspirasi, masukan, harapan, atau saranmu untuk pengembangan divisi PSDM dan HIMSI ke depannya..."
           value={aspiration.feedback_text}
           onChange={(e) => onChangeAspiration({ feedback_text: e.target.value })}
           className={`
@@ -199,7 +199,7 @@ export default function StepAspirasi({
                       return (
                         <span key={s.skill_id} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-blue-100 text-blue-700 border border-blue-200">
                           {s.skill_name}
-                          <span className="opacity-75">· {lvl.icon} {lvl.label}</span>
+                          <span className="opacity-75">·  {lvl.label}</span>
                         </span>
                       );
                     })}
@@ -215,7 +215,7 @@ export default function StepAspirasi({
                       return (
                         <span key={s.skill_id} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-yellow-100 text-yellow-700 border border-yellow-200">
                           {s.skill_name}
-                          <span className="opacity-75">· {lvl.icon} {lvl.label}</span>
+                          <span className="opacity-75">· {lvl.label}</span>
                         </span>
                       );
                     })}

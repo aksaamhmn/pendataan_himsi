@@ -1,5 +1,5 @@
 /**
- * Data Fetching Layer — Dashboard PSDM HIMASI
+ * Data Fetching Layer — Dashboard PSDM HIMSI
  * Fungsi-fungsi untuk mengambil dan mengolah data dari Supabase
  * untuk keperluan dashboard admin.
  */
@@ -13,7 +13,8 @@ export interface DashboardStats {
   totalAspirations: number;
   topHardSkill: { name: string; count: number } | null;
   topSoftSkill: { name: string; count: number } | null;
-  topInterest: { name: string; count: number } | null;
+  topMinatAkademik: { name: string; count: number } | null;
+  topMinatNonAkademik: { name: string; count: number } | null;
   angkatanDistribution: { angkatan: number; count: number }[];
   skillDistribution: { name: string; category: string; count: number }[];
   interestDistribution: { name: string; category: string; count: number }[];
@@ -29,6 +30,17 @@ export interface StudentWithRelations {
   skills: { name: string; category: string; level: string }[];
   interests: { name: string; category: string }[];
   aspirations: { feedback_text: string; created_at: string }[];
+}
+
+export interface AspirationWithStudent {
+  id: string;
+  feedback_text: string;
+  created_at: string;
+  student: {
+    nama: string;
+    nim: string;
+    angkatan: number;
+  } | null;
 }
 
 // ─── getDashboardStats ─────────────────────────────────────────
@@ -85,7 +97,8 @@ export async function getDashboardStats(): Promise<DashboardStats> {
   });
 
   const interestDistribution = Array.from(interestCounts.values()).sort((a, b) => b.count - a.count);
-  const topInterest = interestDistribution[0] ?? null;
+  const topMinatAkademik = interestDistribution.find((i) => i.category === "akademik") ?? null;
+  const topMinatNonAkademik = interestDistribution.find((i) => i.category === "non_akademik") ?? null;
 
   // 5. Angkatan distribution
   const { data: angkatanRows } = await supabase
@@ -105,7 +118,8 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     totalAspirations: totalAspirations ?? 0,
     topHardSkill: topHardSkill ? { name: topHardSkill.name, count: topHardSkill.count } : null,
     topSoftSkill: topSoftSkill ? { name: topSoftSkill.name, count: topSoftSkill.count } : null,
-    topInterest: topInterest ? { name: topInterest.name, count: topInterest.count } : null,
+    topMinatAkademik: topMinatAkademik ? { name: topMinatAkademik.name, count: topMinatAkademik.count } : null,
+    topMinatNonAkademik: topMinatNonAkademik ? { name: topMinatNonAkademik.name, count: topMinatNonAkademik.count } : null,
     angkatanDistribution,
     skillDistribution: skillDistribution.slice(0, 10),
     interestDistribution: interestDistribution.slice(0, 10),
@@ -168,4 +182,84 @@ export async function getStudentsData(): Promise<StudentWithRelations[]> {
       })),
     };
   });
+}
+
+// ─── getAspirations ────────────────────────────────────────────
+
+export async function getAspirations(): Promise<AspirationWithStudent[]> {
+  const supabase = await createClient();
+
+  const { data: aspirations, error } = await supabase
+    .from("aspirations")
+    .select("id, feedback_text, created_at, students(nama, nim, angkatan)")
+    .order("created_at", { ascending: false });
+
+  if (error || !aspirations) return [];
+
+  return aspirations.map((a) => {
+    const student = a.students as unknown as { nama: string; nim: string; angkatan: number } | null;
+    return {
+      id: a.id,
+      feedback_text: a.feedback_text,
+      created_at: a.created_at,
+      student,
+    };
+  });
+}
+
+// ─── getStudentByNim ───────────────────────────────────────────
+
+export async function getStudentByNim(nim: string): Promise<StudentWithRelations | null> {
+  const supabase = await createClient();
+
+  const { data: student, error } = await supabase
+    .from("students")
+    .select(`
+      nim,
+      nama,
+      angkatan,
+      email,
+      whatsapp,
+      created_at,
+      student_skills(level, skills(name, category)),
+      student_interests(interests(name, category)),
+      aspirations(feedback_text, created_at)
+    `)
+    .eq("nim", nim)
+    .maybeSingle();
+
+  if (error || !student) return null;
+
+  const studentSkills = student.student_skills as unknown as
+    { level: string; skills: { name: string; category: string } | null }[] | null;
+  const studentInterests = student.student_interests as unknown as
+    { interests: { name: string; category: string } | null }[] | null;
+  const studentAspirations = student.aspirations as unknown as
+    { feedback_text: string; created_at: string }[] | null;
+
+  return {
+    nim: student.nim,
+    nama: student.nama,
+    angkatan: student.angkatan,
+    email: student.email,
+    whatsapp: student.whatsapp,
+    created_at: student.created_at,
+    skills: (studentSkills || [])
+      .filter((sk) => sk.skills)
+      .map((sk) => ({
+        name: sk.skills!.name,
+        category: sk.skills!.category,
+        level: sk.level,
+      })),
+    interests: (studentInterests || [])
+      .filter((si) => si.interests)
+      .map((si) => ({
+        name: si.interests!.name,
+        category: si.interests!.category,
+      })),
+    aspirations: (studentAspirations || []).map((a) => ({
+      feedback_text: a.feedback_text,
+      created_at: a.created_at,
+    })),
+  };
 }

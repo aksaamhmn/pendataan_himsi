@@ -1,5 +1,5 @@
 // ============================================================
-// Database Type Definitions untuk PSDM HIMASI
+// Database Type Definitions untuk PSDM HIMSI
 // Auto-generated berdasarkan schema SQL migration
 // ============================================================
 
@@ -324,10 +324,25 @@ export interface FormAspiration {
   feedback_text: string;
 }
 
+/** Custom minat baru yang diinput mahasiswa */
+export interface NewInterestEntry {
+  name: string;
+  category: InterestCategory;
+}
+
+/** Custom skill baru yang diinput mahasiswa */
+export interface NewSkillEntry {
+  name: string;
+  category: SkillCategory;
+  level: SkillLevel;
+}
+
 /** Keseluruhan state form multi-step */
 export interface FormData {
   biodata: FormBiodata;
   skills: FormSkillEntry[];
   interests: FormInterestEntry[];
   aspiration: FormAspiration;
+  newInterests: NewInterestEntry[];
+  newSkills: NewSkillEntry[];
 }

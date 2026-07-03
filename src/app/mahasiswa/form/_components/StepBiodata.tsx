@@ -17,7 +17,7 @@ interface StepBiodataProps {
 }
 
 const currentYear = new Date().getFullYear();
-const angkatanOptions = Array.from({ length: 7 }, (_, i) => {
+const angkatanOptions = Array.from({ length: 4 }, (_, i) => {
   const year = currentYear - i;
   return { value: String(year), label: String(year) };
 });
@@ -59,11 +59,11 @@ export default function StepBiodata({ data, onChange, errors }: StepBiodataProps
         <Input
           id="nim"
           label="NIM (Nomor Induk Mahasiswa)"
-          placeholder="Contoh: 162023001"
+          placeholder="Otomatis dari akun"
           value={data.nim}
-          onChange={(e) => handleChange("nim", e.target.value)}
-          error={errors.nim}
-          required
+          readOnly
+          className="bg-gray-100 text-gray-500 cursor-not-allowed"
+          helperText="NIM diisi otomatis dari akun login Anda"
         />
         <Select
           id="angkatan"

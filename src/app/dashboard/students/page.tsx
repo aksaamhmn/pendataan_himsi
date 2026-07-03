@@ -8,7 +8,7 @@ import { getStudentsData } from "@/lib/data/dashboard";
 import StudentDataTable from "../_components/StudentDataTable";
 
 export const metadata: Metadata = {
-  title: "Data Mahasiswa — PSDM HIMASI",
+  title: "Data Mahasiswa — PSDM HIMSI",
   description: "Daftar lengkap data mahasiswa beserta skill, minat, dan aspirasi.",
 };
 

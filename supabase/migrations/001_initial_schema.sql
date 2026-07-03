@@ -1,5 +1,5 @@
 -- ============================================================
--- PSDM HIMASI — Database Schema Migration
+-- PSDM HIMSI — Database Schema Migration
 -- Jalankan script ini di Supabase SQL Editor
 -- ============================================================
 

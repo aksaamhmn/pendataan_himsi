@@ -8,11 +8,13 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
-import type { FormInterestEntry, InterestCategory } from "@/types/database";
+import type { FormInterestEntry, InterestCategory, NewInterestEntry } from "@/types/database";
 
 interface StepMinatProps {
   data: FormInterestEntry[];
   onChange: (data: FormInterestEntry[]) => void;
+  newInterests: NewInterestEntry[];
+  onNewInterestsChange: (data: NewInterestEntry[]) => void;
   errors: Record<string, string>;
 }
 
@@ -75,9 +77,13 @@ const CATEGORY_CONFIG = {
   },
 };
 
-export default function StepMinat({ data, onChange, errors }: StepMinatProps) {
+export default function StepMinat({ data, onChange, newInterests, onNewInterestsChange, errors }: StepMinatProps) {
   const [interests, setInterests] = useState<InterestOption[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [customInputs, setCustomInputs] = useState<Record<string, string>>({
+    akademik: "",
+    non_akademik: "",
+  });
 
   // Fetch interests dari Supabase
   useEffect(() => {
@@ -126,8 +132,32 @@ export default function StepMinat({ data, onChange, errors }: StepMinatProps) {
     [data, onChange, selectedIds]
   );
 
+  const addCustomInterest = useCallback(
+    (category: InterestCategory) => {
+      const name = customInputs[category]?.trim();
+      if (!name) return;
+      // Cek duplikat
+      const exists = newInterests.some(
+        (ni) => ni.name.toLowerCase() === name.toLowerCase() && ni.category === category
+      );
+      if (exists) return;
+      onNewInterestsChange([...newInterests, { name, category }]);
+      setCustomInputs((prev) => ({ ...prev, [category]: "" }));
+    },
+    [customInputs, newInterests, onNewInterestsChange]
+  );
+
+  const removeCustomInterest = useCallback(
+    (index: number) => {
+      onNewInterestsChange(newInterests.filter((_, i) => i !== index));
+    },
+    [newInterests, onNewInterestsChange]
+  );
+
   const akademik = interests.filter((i) => i.category === "akademik");
   const nonAkademik = interests.filter((i) => i.category === "non_akademik");
+
+  const totalSelected = data.length + newInterests.length;
 
   if (isLoading) {
     return (
@@ -152,7 +182,7 @@ export default function StepMinat({ data, onChange, errors }: StepMinatProps) {
         </div>
         <h2 className="text-xl font-semibold text-gray-900">Minat & Bakat</h2>
         <p className="text-sm text-gray-500 mt-1">
-          Pilih minat yang sesuai dengan dirimu. Kamu bisa memilih lebih dari satu.
+          Pilih minat yang sesuai dengan dirimu. Kamu bisa memilih lebih dari satu, atau tambahkan sendiri.
         </p>
         {errors.interests && (
           <p className="text-sm text-red-500 mt-2 flex items-center gap-1.5">
@@ -165,13 +195,13 @@ export default function StepMinat({ data, onChange, errors }: StepMinatProps) {
       </div>
 
       {/* Selected counter */}
-      {data.length > 0 && (
+      {totalSelected > 0 && (
         <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-green-50 border border-green-200">
           <svg className="w-4 h-4 text-green-600" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
           </svg>
           <span className="text-sm text-green-700">
-            <span className="font-semibold">{data.length}</span> minat dipilih
+            <span className="font-semibold">{totalSelected}</span> minat dipilih
           </span>
         </div>
       )}
@@ -180,6 +210,7 @@ export default function StepMinat({ data, onChange, errors }: StepMinatProps) {
       {(["akademik", "non_akademik"] as const).map((category) => {
         const config = CATEGORY_CONFIG[category];
         const items = category === "akademik" ? akademik : nonAkademik;
+        const customForCategory = newInterests.filter((ni) => ni.category === category);
 
         return (
           <div key={category} className={`rounded-xl border ${config.border} bg-gradient-to-br ${config.gradient} p-4 bg-white/50`}>
@@ -210,6 +241,57 @@ export default function StepMinat({ data, onChange, errors }: StepMinatProps) {
                   </button>
                 );
               })}
+
+              {/* Custom badges */}
+              {customForCategory.map((ci, idx) => {
+                const globalIdx = newInterests.findIndex(
+                  (ni) => ni.name === ci.name && ni.category === ci.category
+                );
+                return (
+                  <span
+                    key={`custom-${idx}`}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium border-2 border-dashed border-yellow-500 bg-yellow-50 text-yellow-800"
+                  >
+                    {ci.name}
+                    <button
+                      type="button"
+                      onClick={() => removeCustomInterest(globalIdx)}
+                      className="ml-0.5 w-4 h-4 rounded-full flex items-center justify-center hover:bg-yellow-200 transition-colors"
+                    >
+                      <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </span>
+                );
+              })}
+            </div>
+
+            {/* Custom input "Lainnya" */}
+            <div className="mt-3 flex gap-2">
+              <input
+                type="text"
+                placeholder="Tambah minat lainnya..."
+                value={customInputs[category]}
+                onChange={(e) =>
+                  setCustomInputs((prev) => ({ ...prev, [category]: e.target.value }))
+                }
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    addCustomInterest(category);
+                  }
+                }}
+                className="flex-1 px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400"
+              />
+              <button
+                type="button"
+                onClick={() => addCustomInterest(category)}
+                disabled={!customInputs[category]?.trim()}
+                className="px-3 py-2 rounded-lg bg-yellow-400 text-gray-900 text-sm font-semibold hover:bg-yellow-500 transition-colors disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap"
+              >
+                + Tambah
+              </button>
             </div>
           </div>
         );

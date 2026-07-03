@@ -1,10 +1,10 @@
 "use client";
 
 /**
- * Login Page — Portal Autentikasi PSDM HIMASI
+ * Login Page — Portal Autentikasi PSDM HIMSI
  * Mahasiswa login dengan NRP + PIN.
  * Admin login dengan username + PIN.
- * NRP/username diappend @himasi.local untuk Supabase email auth.
+ * NRP/username diappend @himsi.local untuk Supabase email auth.
  */
 
 import { useState, useCallback, type FormEvent } from "react";
@@ -42,7 +42,7 @@ export default function LoginPage() {
 
       try {
         const supabase = createClient();
-        const email = `${trimmedNrp}@himasi.local`;
+        const email = `${trimmedNrp}@himsi.local`;
 
         const { data, error: authError } =
           await supabase.auth.signInWithPassword({
@@ -92,7 +92,7 @@ export default function LoginPage() {
               />
             </svg>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">PSDM HIMASI</h1>
+          <h1 className="text-2xl font-bold text-gray-900">PSDM HIMSI</h1>
           <p className="text-sm text-gray-500 mt-1">
             Masuk ke portal pendataan mahasiswa
           </p>
