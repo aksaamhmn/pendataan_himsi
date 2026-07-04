@@ -7,7 +7,6 @@
 
 import { useCallback } from "react";
 import Input from "@/components/ui/Input";
-import Select from "@/components/ui/Select";
 import type { FormBiodata } from "@/types/database";
 
 interface StepBiodataProps {
@@ -18,11 +17,6 @@ interface StepBiodataProps {
   onIpkChange?: (value: string) => void;
 }
 
-const currentYear = new Date().getFullYear();
-const angkatanOptions = Array.from({ length: 4 }, (_, i) => {
-  const year = currentYear - i;
-  return { value: String(year), label: String(year) };
-});
 
 export default function StepBiodata({ data, onChange, errors, ipk, onIpkChange }: StepBiodataProps) {
   const handleChange = useCallback(
@@ -67,14 +61,14 @@ export default function StepBiodata({ data, onChange, errors, ipk, onIpkChange }
           className="bg-gray-100 text-gray-500 cursor-not-allowed"
           helperText="NIM diisi otomatis dari akun login Anda"
         />
-        <Select
+        <Input
           id="angkatan"
           label="Angkatan"
-          options={angkatanOptions}
+          placeholder="Otomatis dari akun"
           value={String(data.angkatan)}
-          onChange={(e) => handleChange("angkatan", parseInt(e.target.value))}
-          error={errors.angkatan}
-          required
+          readOnly
+          className="bg-gray-100 text-gray-500 cursor-not-allowed"
+          helperText="Angkatan diisi otomatis dari NIM Anda"
         />
       </div>
 

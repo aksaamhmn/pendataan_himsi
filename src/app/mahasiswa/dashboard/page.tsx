@@ -124,7 +124,7 @@ export default async function StudentDashboard() {
                   Formulir Sudah Diisi
                 </p>
                 <p className="text-sm text-gray-500 mt-0.5">
-                  Kamu sudah mengisi formulir pendataan PSDM HIMSI. Terima kasih atas partisipasimu!
+                  Kamu sudah mengisi formulir pendataan HIMSI. Terima kasih atas partisipasimu!
                 </p>
                 <p className="text-xs text-gray-400 mt-2">
                   <ClientDate isoString={student.created_at} prefix="Diisi pada: " />

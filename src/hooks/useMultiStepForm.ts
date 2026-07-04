@@ -9,11 +9,19 @@ import type { FormData } from "@/types/database";
 
 /** State awal form kosong */
 function createInitialFormData(initialNim: string = ""): FormData {
+  let initialAngkatan = new Date().getFullYear();
+  if (initialNim && initialNim.length >= 6) {
+    const parsed = parseInt(initialNim.substring(2, 6));
+    if (!isNaN(parsed) && parsed > 2000 && parsed < 2100) {
+      initialAngkatan = parsed;
+    }
+  }
+
   return {
     biodata: {
       nim: initialNim,
       nama: "",
-      angkatan: new Date().getFullYear(),
+      angkatan: initialAngkatan,
       email: "",
       whatsapp: "",
     },
