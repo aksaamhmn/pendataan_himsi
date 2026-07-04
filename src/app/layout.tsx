@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "SITALENT",
-  description: "Portal Pendataan Mahasiswa PSDM HIMSI",
+  description: "Portal Pendataan Mahasiswa HIMSI",
   icons: {
     icon: "/logo_himsi.png",
   },

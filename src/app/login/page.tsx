@@ -62,7 +62,7 @@ export default function LoginPage() {
         if (role === "admin") {
           router.push("/dashboard");
         } else {
-          router.push("/mahasiswa/profile");
+          router.push("/mahasiswa/dashboard");
         }
         router.refresh();
       } catch {

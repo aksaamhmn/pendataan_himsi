@@ -64,7 +64,7 @@ export default function StepAspirasi({
       {/* Textarea Aspirasi */}
       <div className="space-y-1.5">
         <label htmlFor="aspirasi" className="block text-sm font-medium text-gray-700">
-          Aspirasi / Feedback untuk PSDM HIMSI
+          Aspirasi / Feedback untuk HIMSI atau Program Studi Sistem Informasi
         </label>
         <textarea
           id="aspirasi"

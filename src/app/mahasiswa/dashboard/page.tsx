@@ -46,7 +46,7 @@ export default async function StudentDashboard() {
           Selamat Datang
         </h1>
         <p className="text-gray-500 mt-1">
-          Portal pendataan mahasiswa PSDM HIMSI
+          Portal pendataan mahasiswa HIMSI
         </p>
       </div>
 

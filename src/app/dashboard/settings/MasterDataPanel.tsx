@@ -157,8 +157,12 @@ export default function MasterDataPanel() {
 
       <div className="p-6 bg-gray-50/30">
         {/* Form Tambah */}
-        <form onSubmit={handleAdd} className="flex flex-col sm:flex-row gap-3 mb-6 bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
-          <input
+        <div className="mb-6 bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+          <h4 className="text-sm font-semibold text-gray-900 mb-3">
+            Tambah {activeTab === "skills" ? "Keterampilan (Skill)" : "Minat (Interest)"} Baru
+          </h4>
+          <form onSubmit={handleAdd} className="flex flex-col sm:flex-row gap-3">
+            <input
             type="text"
             value={newItemName}
             onChange={(e) => setNewItemName(e.target.value)}
@@ -186,7 +190,8 @@ export default function MasterDataPanel() {
           >
             Tambah
           </button>
-        </form>
+          </form>
+        </div>
 
         {/* Filter Tabel */}
         <div className="flex justify-between items-center mb-4">

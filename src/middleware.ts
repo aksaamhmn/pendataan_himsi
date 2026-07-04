@@ -8,7 +8,7 @@ import { isSupabaseConfigured } from "@/lib/supabase/config";
  * 1. Public routes (/login, /api/*, static assets) → dilewati
  * 2. User belum login → redirect ke /login
  * 3. / → redirect sesuai role
- * 4. student akses /dashboard/* → redirect ke /mahasiswa/profile
+ * 4. student akses /dashboard/* → redirect ke /mahasiswa/dashboard
  * 5. admin akses /mahasiswa/* → redirect ke /dashboard
  */
 
@@ -36,7 +36,7 @@ export async function middleware(request: NextRequest) {
     // Jika sudah login dan mengakses /login, redirect sesuai role
     if (pathname === "/login" && user) {
       const role = user.user_metadata?.role as string | undefined;
-      const target = role === "admin" ? "/dashboard" : "/mahasiswa/profile";
+      const target = role === "admin" ? "/dashboard" : "/mahasiswa/dashboard";
       return NextResponse.redirect(new URL(target, request.url));
     }
     return supabaseResponse;
@@ -52,14 +52,14 @@ export async function middleware(request: NextRequest) {
 
   // Root "/" → redirect sesuai role
   if (pathname === "/") {
-    const target = role === "admin" ? "/dashboard" : "/mahasiswa/profile";
+    const target = role === "admin" ? "/dashboard" : "/mahasiswa/dashboard";
     return NextResponse.redirect(new URL(target, request.url));
   }
 
   // Student mencoba akses dashboard → redirect ke portal mahasiswa
   if (role === "student" && pathname.startsWith("/dashboard")) {
     return NextResponse.redirect(
-      new URL("/mahasiswa/profile", request.url)
+      new URL("/mahasiswa/dashboard", request.url)
     );
   }
 

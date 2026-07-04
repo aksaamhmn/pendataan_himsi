@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * RecentTable — Tabel 8 pendaftar terakhir (server-rendered).
  * Kolom: Nama, NIM, Angkatan, Tanggal (dengan jam).
