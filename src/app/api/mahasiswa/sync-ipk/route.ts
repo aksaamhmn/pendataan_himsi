@@ -66,8 +66,8 @@ export async function POST(request: Request) {
     // ─── Parse data IPK ──────────────────────────────────────
     if (
       !akademikData ||
-      !Array.isArray(akademikData.data) ||
-      akademikData.data.length === 0
+      !Array.isArray(akademikData) ||
+      akademikData.length === 0
     ) {
       return NextResponse.json(
         {
@@ -79,7 +79,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const rawIpk = akademikData.data[0]?.disp_IPK;
+    const rawIpk = akademikData[0]?.disp_IPK;
 
     if (rawIpk === undefined || rawIpk === null) {
       return NextResponse.json(
