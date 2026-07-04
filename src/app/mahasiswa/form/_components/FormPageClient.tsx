@@ -232,11 +232,11 @@ export default function FormPageClient({ sessionNim, initialData }: FormPageClie
               size="lg"
               className="w-full bg-yellow-400 hover:bg-yellow-500 text-gray-900 border-none"
               onClick={() => {
-                router.push("/mahasiswa/profile");
+                router.push("/mahasiswa/dashboard");
                 router.refresh();
               }}
             >
-              Lihat Profile Saya
+              Ke Dashboard
             </Button>
           </div>
         </div>
