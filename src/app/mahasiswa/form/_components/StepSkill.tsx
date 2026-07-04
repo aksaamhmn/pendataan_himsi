@@ -327,49 +327,49 @@ export default function StepSkill({ data, onChange, newSkills, onNewSkillsChange
             </div>
 
             {/* Custom input "Lainnya" */}
-            <div className="mt-3 flex gap-2 items-end">
-              <div className="flex-1">
-                <input
-                  type="text"
-                  placeholder="Tambah skill lainnya..."
-                  value={customInputs[category]?.name || ""}
-                  onChange={(e) =>
-                    setCustomInputs((prev) => ({
-                      ...prev,
-                      [category]: { ...prev[category], name: e.target.value },
-                    }))
-                  }
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      e.preventDefault();
-                      addCustomSkill(category);
-                    }
-                  }}
-                  className="w-full px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400"
-                />
-              </div>
-              <select
-                value={customInputs[category]?.level || "pemula"}
+            <div className="mt-3 flex flex-col gap-2">
+              <input
+                type="text"
+                placeholder="Tambah skill lainnya..."
+                value={customInputs[category]?.name || ""}
                 onChange={(e) =>
                   setCustomInputs((prev) => ({
                     ...prev,
-                    [category]: { ...prev[category], level: e.target.value as SkillLevel },
+                    [category]: { ...prev[category], name: e.target.value },
                   }))
                 }
-                className="px-2 py-2 rounded-lg border border-gray-300 bg-white text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400"
-              >
-                <option value="pemula">Pemula</option>
-                <option value="menengah">Menengah</option>
-                <option value="mahir">Mahir</option>
-              </select>
-              <button
-                type="button"
-                onClick={() => addCustomSkill(category)}
-                disabled={!customInputs[category]?.name?.trim()}
-                className="px-3 py-2 rounded-lg bg-yellow-400 text-gray-900 text-sm font-semibold hover:bg-yellow-500 transition-colors disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap"
-              >
-                + Tambah
-              </button>
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    addCustomSkill(category);
+                  }
+                }}
+                className="w-full px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400"
+              />
+              <div className="flex gap-2">
+                <select
+                  value={customInputs[category]?.level || "pemula"}
+                  onChange={(e) =>
+                    setCustomInputs((prev) => ({
+                      ...prev,
+                      [category]: { ...prev[category], level: e.target.value as SkillLevel },
+                    }))
+                  }
+                  className="flex-1 px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400"
+                >
+                  <option value="pemula">Pemula</option>
+                  <option value="menengah">Menengah</option>
+                  <option value="mahir">Mahir</option>
+                </select>
+                <button
+                  type="button"
+                  onClick={() => addCustomSkill(category)}
+                  disabled={!customInputs[category]?.name?.trim()}
+                  className="px-4 py-2 rounded-lg bg-yellow-400 text-gray-900 text-sm font-semibold hover:bg-yellow-500 transition-colors disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap"
+                >
+                  + Tambah
+                </button>
+              </div>
             </div>
           </div>
         );

@@ -47,7 +47,7 @@ export default async function FormPage({
   const { data: student } = await supabase
     .from("students")
     .select(`
-      nim, nama, angkatan, email, whatsapp,
+      nim, nama, angkatan, email, whatsapp, ipk,
       student_skills(level, skills(id, name, category)),
       student_interests(interests(id, name, category)),
       aspirations(feedback_text)
@@ -134,6 +134,7 @@ export default async function FormPage({
       },
       newInterests: [],
       newSkills: [],
+      ipk: student.ipk !== null ? String(student.ipk) : null,
     };
 
     return <FormPageClient sessionNim={nrp} initialData={initialData} />;

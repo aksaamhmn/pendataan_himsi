@@ -92,8 +92,8 @@ export default function StepBiodata({ data, onChange, errors, ipk, onIpkChange }
           inputMode="decimal"
           value={ipk ?? ""}
           onChange={(e) => {
-            // Hanya izinkan angka dan titik
-            const val = e.target.value.replace(/[^0-9.]/g, "");
+            // Izinkan angka, titik, dan koma. Koma otomatis diubah menjadi titik.
+            const val = e.target.value.replace(/,/g, ".").replace(/[^0-9.]/g, "");
             onIpkChange?.(val);
           }}
           placeholder="Contoh: 3.50"

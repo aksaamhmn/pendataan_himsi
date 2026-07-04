@@ -60,7 +60,7 @@ export default function MahasiswaLayout({
       {/* Mobile overlay */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden"
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
@@ -68,7 +68,7 @@ export default function MahasiswaLayout({
       {/* Sidebar */}
       <aside
         className={`
-          fixed lg:sticky top-0 left-0 z-50 h-screen w-64
+          fixed lg:sticky top-0 left-0 z-[70] h-screen w-64
           bg-white border-r border-gray-200
           flex flex-col transition-transform duration-300 ease-in-out
           ${sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}

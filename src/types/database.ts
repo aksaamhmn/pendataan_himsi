@@ -357,4 +357,5 @@ export interface FormData {
   aspiration: FormAspiration;
   newInterests: NewInterestEntry[];
   newSkills: NewSkillEntry[];
+  ipk?: string | null;
 }

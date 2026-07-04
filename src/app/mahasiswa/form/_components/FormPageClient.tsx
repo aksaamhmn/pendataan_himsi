@@ -45,7 +45,7 @@ export default function FormPageClient({ sessionNim, initialData }: FormPageClie
   // ─── IPK State (Manual Input) ─────────────────────────────────
   // API ITENAS dilindungi oleh Laravel session auth sehingga tidak bisa
   // diakses cross-origin. Mahasiswa mengisi IPK secara manual.
-  const [ipk, setIpk] = useState<string>(initialData ? "" : "");
+  const [ipk, setIpk] = useState<string>(initialData?.ipk ? String(initialData.ipk) : "");
   const isSyncingIpk = false; // Tidak ada sinkronisasi otomatis
 
   // ─── Validation ──────────────────────────────────────────────
