@@ -14,8 +14,8 @@ interface StepBiodataProps {
   data: FormBiodata;
   onChange: (data: FormBiodata) => void;
   errors: Record<string, string>;
-  ipk?: string | null;
-  isSyncingIpk?: boolean;
+  ipk?: string;
+  onIpkChange?: (value: string) => void;
 }
 
 const currentYear = new Date().getFullYear();
@@ -24,7 +24,7 @@ const angkatanOptions = Array.from({ length: 4 }, (_, i) => {
   return { value: String(year), label: String(year) };
 });
 
-export default function StepBiodata({ data, onChange, errors, ipk, isSyncingIpk }: StepBiodataProps) {
+export default function StepBiodata({ data, onChange, errors, ipk, onIpkChange }: StepBiodataProps) {
   const handleChange = useCallback(
     (field: keyof FormBiodata, value: string | number) => {
       onChange({ ...data, [field]: value });
@@ -78,44 +78,32 @@ export default function StepBiodata({ data, onChange, errors, ipk, isSyncingIpk 
         />
       </div>
 
-      {/* IPK (Read-Only dari Sistem Akademik) */}
+      {/* IPK (Input Manual) */}
       <div>
         <label
           htmlFor="ipk-akademik"
           className="block text-sm font-medium text-gray-700 mb-1.5"
         >
-          IPK{" "}
-          <span className="text-gray-400 font-normal">(Otomatis dari Sistem Akademik)</span>
+          IPK Terakhir <span className="text-red-500">*</span>
         </label>
-        <div className="relative">
-          <input
-            id="ipk-akademik"
-            type="text"
-            value={isSyncingIpk ? "" : (ipk ?? "Data tidak tersedia")}
-            readOnly
-            disabled
-            placeholder={isSyncingIpk ? "" : "Data tidak tersedia"}
-            className="w-full px-4 py-2.5 rounded-lg bg-gray-100 border border-gray-300 text-gray-500 text-sm cursor-not-allowed"
-          />
-          {isSyncingIpk && (
-            <div className="absolute inset-y-0 left-4 flex items-center gap-2">
-              <svg className="animate-spin w-4 h-4 text-yellow-500" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-              <span className="text-xs text-gray-400">Menyinkronkan data...</span>
-            </div>
-          )}
-          {!isSyncingIpk && (
-            <div className="absolute inset-y-0 right-3 flex items-center">
-              <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
-              </svg>
-            </div>
-          )}
-        </div>
+        <input
+          id="ipk-akademik"
+          type="text"
+          inputMode="decimal"
+          value={ipk ?? ""}
+          onChange={(e) => {
+            // Hanya izinkan angka dan titik
+            const val = e.target.value.replace(/[^0-9.]/g, "");
+            onIpkChange?.(val);
+          }}
+          placeholder="Contoh: 3.50"
+          className="w-full px-4 py-2.5 rounded-lg bg-white border border-gray-300 text-gray-900 text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400"
+        />
+        {errors.ipk && (
+          <p className="mt-1 text-xs text-red-500">{errors.ipk}</p>
+        )}
         <p className="mt-1 text-xs text-gray-400">
-          Nilai IPK diambil langsung dari sistem akademik kampus.
+          Masukkan IPK terakhir Anda sesuai data di portal akademik kampus (0.00 - 4.00).
         </p>
       </div>
 

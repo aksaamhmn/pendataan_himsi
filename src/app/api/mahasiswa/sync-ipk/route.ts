@@ -4,8 +4,7 @@
  * POST /api/mahasiswa/sync-ipk
  * Body: { nrp: string, ipk: number }
  *
- * Menerima nilai IPK yang sudah di-fetch oleh browser client
- * (karena fetch dari serverless Netlify diblokir oleh ITENAS),
+ * Menerima nilai IPK yang diinput manual oleh mahasiswa,
  * lalu menyimpannya ke tabel students di Supabase.
  */
 
@@ -32,9 +31,9 @@ export async function POST(request: Request) {
 
     const ipkValue = parseFloat(String(ipk));
 
-    if (isNaN(ipkValue)) {
+    if (isNaN(ipkValue) || ipkValue < 0 || ipkValue > 4) {
       return NextResponse.json(
-        { success: false, error: `Nilai IPK tidak valid: "${ipk}"` },
+        { success: false, error: "Nilai IPK harus antara 0.00 - 4.00." },
         { status: 422 }
       );
     }

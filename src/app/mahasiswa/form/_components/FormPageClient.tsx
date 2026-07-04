@@ -42,49 +42,11 @@ export default function FormPageClient({ sessionNim, initialData }: FormPageClie
   const [submitStatus, setSubmitStatus] = useState<SubmitStatus>("idle");
   const [submitError, setSubmitError] = useState("");
 
-  // ─── IPK Sync State ──────────────────────────────────────────
-  const [ipk, setIpk] = useState<string | null>(null);
-  const [isSyncingIpk, setIsSyncingIpk] = useState(true);
-
-  useEffect(() => {
-    const syncIpk = async () => {
-      try {
-        // Step 1: Fetch IPK langsung dari API kampus via browser
-        // (browser mahasiswa punya IP residensial, tidak diblokir ITENAS)
-        const ACTIVE_SEMESTER = "20252";
-        const apiUrl = `https://mahasiswa.itenas.ac.id/mahasiswa/AKT258-11-header-mahasiswa?nimhs=${sessionNim}&thsms=${ACTIVE_SEMESTER}`;
-
-        const kampusRes = await fetch(apiUrl);
-        const kampusData = await kampusRes.json();
-
-        if (!Array.isArray(kampusData) || kampusData.length === 0) {
-          setIpk(null);
-          return;
-        }
-
-        const rawIpk = kampusData[0]?.disp_IPK;
-        if (!rawIpk) {
-          setIpk(null);
-          return;
-        }
-
-        setIpk(String(rawIpk));
-
-        // Step 2: Simpan IPK ke database via API internal kita
-        await fetch("/api/mahasiswa/sync-ipk", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ nrp: sessionNim, ipk: parseFloat(String(rawIpk)) }),
-        });
-      } catch {
-        // Jika CORS atau network error, IPK tidak ditampilkan
-        setIpk(null);
-      } finally {
-        setIsSyncingIpk(false);
-      }
-    };
-    syncIpk();
-  }, [sessionNim]);
+  // ─── IPK State (Manual Input) ─────────────────────────────────
+  // API ITENAS dilindungi oleh Laravel session auth sehingga tidak bisa
+  // diakses cross-origin. Mahasiswa mengisi IPK secara manual.
+  const [ipk, setIpk] = useState<string>(initialData ? "" : "");
+  const isSyncingIpk = false; // Tidak ada sinkronisasi otomatis
 
   // ─── Validation ──────────────────────────────────────────────
 
@@ -100,9 +62,17 @@ export default function FormPageClient({ sessionNim, initialData }: FormPageClie
     if (!b.whatsapp.trim()) errs.whatsapp = "Nomor WhatsApp wajib diisi";
     else if (!/^(\+62|08)\d{8,13}$/.test(b.whatsapp.trim())) errs.whatsapp = "Format nomor tidak valid (08xx atau +628xx)";
 
+    if (!ipk) errs.ipk = "IPK wajib diisi";
+    else {
+      const ipkNum = parseFloat(ipk);
+      if (isNaN(ipkNum) || ipkNum < 0 || ipkNum > 4) {
+        errs.ipk = "IPK harus berupa angka antara 0.00 - 4.00";
+      }
+    }
+
     setErrors(errs);
     return Object.keys(errs).length === 0;
-  }, [form.formData.biodata]);
+  }, [form.formData.biodata, ipk]);
 
   const validateMinat = useCallback((): boolean => {
     const errs: Record<string, string> = {};
@@ -174,12 +144,25 @@ export default function FormPageClient({ sessionNim, initialData }: FormPageClie
         throw new Error(data.error || "Gagal menghubungi server. Silakan periksa koneksi Anda.");
       }
 
+      // ─── Save IPK ──────────────────────────────────────────────
+      if (ipk) {
+        const ipkRes = await fetch("/api/mahasiswa/sync-ipk", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ nrp: sessionNim, ipk: parseFloat(ipk) }),
+        });
+        
+        if (!ipkRes.ok) {
+           console.warn("Failed to save IPK");
+        }
+      }
+
       setSubmitStatus("success");
     } catch (err) {
       setSubmitError(err instanceof Error ? err.message : "Terjadi kesalahan yang tidak diketahui.");
       setSubmitStatus("error");
     }
-  }, [form.formData]);
+  }, [form.formData, isEdit, ipk, sessionNim]);
 
   // ─── Data update handlers ────────────────────────────────────
 
@@ -345,8 +328,8 @@ export default function FormPageClient({ sessionNim, initialData }: FormPageClie
               data={form.formData.biodata}
               onChange={handleBiodataChange}
               errors={errors}
-              ipk={ipk}
-              isSyncingIpk={isSyncingIpk}
+              ipk={ipk || ""}
+              onIpkChange={setIpk}
             />
           )}
           {form.currentStep === 1 && (
