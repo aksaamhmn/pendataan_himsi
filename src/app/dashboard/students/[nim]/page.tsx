@@ -78,6 +78,9 @@ export default async function StudentDetailPage({
               <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600 border border-gray-200">
                 Terdaftar {formatDate(student.created_at)}
               </span>
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 border border-blue-200">
+                IPK {student.ipk || "-"}
+              </span>
             </div>
           </div>
         </div>

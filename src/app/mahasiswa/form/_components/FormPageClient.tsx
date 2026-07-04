@@ -356,6 +356,7 @@ export default function FormPageClient({ sessionNim, initialData }: FormPageClie
               formData={form.formData}
               onChangeAspiration={handleAspirationChange}
               errors={errors}
+              ipk={ipk || ""}
             />
           )}
         </div>

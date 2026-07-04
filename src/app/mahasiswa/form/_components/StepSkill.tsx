@@ -24,10 +24,10 @@ interface SkillOption {
   category: SkillCategory;
 }
 
-const LEVEL_OPTIONS: { value: SkillLevel; label: string; icon: string; color: string }[] = [
-  { value: "pemula", label: "Pemula", icon: "🌱", color: "border-green-200 bg-green-100 text-green-700" },
-  { value: "menengah", label: "Menengah", icon: "🔥", color: "border-yellow-200 bg-yellow-100 text-yellow-700" },
-  { value: "mahir", label: "Mahir", icon: "⚡", color: "border-purple-200 bg-purple-100 text-purple-700" },
+const LEVEL_OPTIONS: { value: SkillLevel; label: string; color: string }[] = [
+  { value: "pemula", label: "Pemula", color: "border-green-200 bg-green-100 text-green-700" },
+  { value: "menengah", label: "Menengah", color: "border-yellow-200 bg-yellow-100 text-yellow-700" },
+  { value: "mahir", label: "Mahir", color: "border-purple-200 bg-purple-100 text-purple-700" },
 ];
 
 const INACTIVE_LEVEL = "border-gray-200 bg-white text-gray-500 hover:bg-gray-50";
@@ -288,7 +288,6 @@ export default function StepSkill({ data, onChange, newSkills, onNewSkillsChange
                               ${selected.level === level.value ? level.color : INACTIVE_LEVEL}
                             `}
                           >
-                            <span>{level.icon}</span>
                             <span>{level.label}</span>
                           </button>
                         ))}
@@ -311,7 +310,7 @@ export default function StepSkill({ data, onChange, newSkills, onNewSkillsChange
                   >
                     <div className="flex items-center gap-2">
                       <span className="text-sm font-medium text-yellow-800">{cs.name}</span>
-                      <span className="text-xs text-yellow-600">{levelOption?.icon} {levelOption?.label}</span>
+                      <span className="text-xs text-yellow-600"> {levelOption?.label}</span>
                     </div>
                     <button
                       type="button"

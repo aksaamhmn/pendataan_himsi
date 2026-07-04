@@ -26,6 +26,7 @@ export interface StudentWithRelations {
   angkatan: number;
   email: string;
   whatsapp: string;
+  ipk: number | null;
   created_at: string;
   skills: { name: string; category: string; level: string }[];
   interests: { name: string; category: string }[];
@@ -139,6 +140,7 @@ export async function getStudentsData(): Promise<StudentWithRelations[]> {
       angkatan,
       email,
       whatsapp,
+      ipk,
       created_at,
       student_skills(level, skills(name, category)),
       student_interests(interests(name, category)),
@@ -162,6 +164,7 @@ export async function getStudentsData(): Promise<StudentWithRelations[]> {
       angkatan: s.angkatan,
       email: s.email,
       whatsapp: s.whatsapp,
+      ipk: s.ipk,
       created_at: s.created_at,
       skills: (studentSkills || [])
         .filter((sk) => sk.skills)
@@ -220,6 +223,7 @@ export async function getStudentByNim(nim: string): Promise<StudentWithRelations
       angkatan,
       email,
       whatsapp,
+      ipk,
       created_at,
       student_skills(level, skills(name, category)),
       student_interests(interests(name, category)),
@@ -243,6 +247,7 @@ export async function getStudentByNim(nim: string): Promise<StudentWithRelations
     angkatan: student.angkatan,
     email: student.email,
     whatsapp: student.whatsapp,
+    ipk: student.ipk,
     created_at: student.created_at,
     skills: (studentSkills || [])
       .filter((sk) => sk.skills)

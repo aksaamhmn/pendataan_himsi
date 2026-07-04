@@ -84,7 +84,7 @@ export default function StepBiodata({ data, onChange, errors, ipk, onIpkChange }
           htmlFor="ipk-akademik"
           className="block text-sm font-medium text-gray-700 mb-1.5"
         >
-          IPK Terakhir <span className="text-red-500">*</span>
+          IPK Terakhir 
         </label>
         <input
           id="ipk-akademik"

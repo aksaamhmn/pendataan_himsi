@@ -93,6 +93,7 @@ export default function StudentDataTable({ students }: StudentDataTableProps) {
                 <tr className="border-b border-gray-200 bg-gray-50">
                   <th className="text-left px-5 py-3 text-xs font-medium text-gray-600 uppercase tracking-wider">Mahasiswa</th>
                   <th className="text-left px-5 py-3 text-xs font-medium text-gray-600 uppercase tracking-wider hidden md:table-cell">Angkatan</th>
+                  <th className="text-left px-5 py-3 text-xs font-medium text-gray-600 uppercase tracking-wider hidden md:table-cell">IPK</th>
                   <th className="text-left px-5 py-3 text-xs font-medium text-gray-600 uppercase tracking-wider hidden lg:table-cell">Kontak</th>
                   <th className="text-left px-5 py-3 text-xs font-medium text-gray-600 uppercase tracking-wider hidden sm:table-cell">Minat</th>
                   <th className="text-left px-5 py-3 text-xs font-medium text-gray-600 uppercase tracking-wider hidden xl:table-cell">Tanggal</th>
@@ -115,6 +116,13 @@ export default function StudentDataTable({ students }: StudentDataTableProps) {
                       <td className="px-5 py-3 hidden md:table-cell">
                         <span className="inline-flex px-2 py-0.5 rounded-full text-xs bg-gray-100 text-gray-700 border border-gray-200">
                           {student.angkatan}
+                        </span>
+                      </td>
+
+                      {/* IPK */}
+                      <td className="px-5 py-3 hidden md:table-cell">
+                        <span className="text-sm text-gray-700">
+                          {student.ipk || "—"}
                         </span>
                       </td>
 

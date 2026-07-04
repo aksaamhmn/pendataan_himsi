@@ -13,6 +13,7 @@ interface StepAspirasiProps {
   formData: FormData;
   onChangeAspiration: (data: FormAspiration) => void;
   errors: Record<string, string>;
+  ipk?: string;
 }
 
 const LEVEL_LABELS: Record<string, { label: string; }> = {
@@ -26,6 +27,7 @@ export default function StepAspirasi({
   formData,
   onChangeAspiration,
   errors,
+  ipk,
 }: StepAspirasiProps) {
   const charCount = aspiration.feedback_text.length;
 
@@ -114,28 +116,32 @@ export default function StepAspirasi({
             </svg>
             Data Diri
           </h4>
-          <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
-            <div>
-              <span className="text-gray-500">Nama</span>
-              <p className="text-gray-900 font-medium truncate">{formData.biodata.nama || "—"}</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <p className="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-0.5">Nama</p>
+                <p className="text-sm font-medium text-gray-900">{formData.biodata.nama || "-"}</p>
+              </div>
+              <div>
+                <p className="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-0.5">NIM</p>
+                <p className="text-sm font-medium text-gray-900">{formData.biodata.nim || "-"}</p>
+              </div>
+              <div>
+                <p className="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-0.5">Angkatan</p>
+                <p className="text-sm font-medium text-gray-900">{formData.biodata.angkatan || "-"}</p>
+              </div>
+              <div>
+                <p className="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-0.5">IPK</p>
+                <p className="text-sm font-medium text-gray-900">{ipk || "-"}</p>
+              </div>
+              <div>
+                <p className="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-0.5">WhatsApp</p>
+                <p className="text-sm font-medium text-gray-900">{formData.biodata.whatsapp || "-"}</p>
+              </div>
+              <div>
+                <p className="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-0.5">Email</p>
+                <p className="text-sm font-medium text-gray-900 truncate">{formData.biodata.email || "-"}</p>
+              </div>
             </div>
-            <div>
-              <span className="text-gray-500">NIM</span>
-              <p className="text-gray-900 font-medium">{formData.biodata.nim || "—"}</p>
-            </div>
-            <div>
-              <span className="text-gray-500">Angkatan</span>
-              <p className="text-gray-900 font-medium">{formData.biodata.angkatan}</p>
-            </div>
-            <div>
-              <span className="text-gray-500">Email</span>
-              <p className="text-gray-900 font-medium truncate">{formData.biodata.email || "—"}</p>
-            </div>
-            <div className="col-span-2">
-              <span className="text-gray-500">WhatsApp</span>
-              <p className="text-gray-900 font-medium">{formData.biodata.whatsapp || "—"}</p>
-            </div>
-          </div>
         </div>
 
         {/* Minat */}
