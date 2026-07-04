@@ -1,22 +1,20 @@
 /**
- * API Route: Sync IPK dari Sistem Akademik Kampus
+ * API Route: Save IPK ke Supabase
  *
  * POST /api/mahasiswa/sync-ipk
- * Body: { nrp: string }
+ * Body: { nrp: string, ipk: number }
  *
- * Melakukan server-side fetch ke API kampus (bypass CORS),
- * mengambil data IPK, dan menyimpannya ke tabel students di Supabase.
+ * Menerima nilai IPK yang sudah di-fetch oleh browser client
+ * (karena fetch dari serverless Netlify diblokir oleh ITENAS),
+ * lalu menyimpannya ke tabel students di Supabase.
  */
 
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
-// Semester aktif — letakkan di variabel agar mudah diubah nanti
-const ACTIVE_SEMESTER = "20252";
-
 export async function POST(request: Request) {
   try {
-    const { nrp } = await request.json();
+    const { nrp, ipk } = await request.json();
 
     if (!nrp || typeof nrp !== "string") {
       return NextResponse.json(
@@ -25,82 +23,18 @@ export async function POST(request: Request) {
       );
     }
 
-    const trimmedNrp = nrp.trim();
-
-    // ─── Fetch data dari API Akademik Kampus ─────────────────
-    const apiUrl = `https://mahasiswa.itenas.ac.id/mahasiswa/AKT258-11-header-mahasiswa?nimhs=${trimmedNrp}&thsms=${ACTIVE_SEMESTER}`;
-
-    let akademikData: any;
-
-    try {
-      const response = await fetch(apiUrl, {
-        method: "GET",
-        headers: {
-          "User-Agent":
-            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
-          Accept: "application/json, text/plain, */*",
-          "Accept-Language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7",
-          "Cache-Control": "no-cache",
-          Connection: "keep-alive",
-          Referer: "https://mahasiswa.itenas.ac.id/",
-        },
-        // Tidak cache agar selalu fresh
-        cache: "no-store",
-      });
-
-      if (!response.ok) {
-        throw new Error(`API kampus mengembalikan status ${response.status}`);
-      }
-
-      akademikData = await response.json();
-    } catch (fetchError: any) {
+    if (ipk === undefined || ipk === null) {
       return NextResponse.json(
-        {
-          success: false,
-          error: `Gagal mengambil data dari sistem akademik: ${fetchError.message}`,
-        },
-        { status: 502 }
+        { success: false, error: "Nilai IPK wajib diisi." },
+        { status: 400 }
       );
     }
 
-    // ─── Parse data IPK ──────────────────────────────────────
-    if (
-      !akademikData ||
-      !Array.isArray(akademikData) ||
-      akademikData.length === 0
-    ) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: "Data akademik tidak ditemukan untuk NRP tersebut.",
-          ipk: null,
-        },
-        { status: 404 }
-      );
-    }
-
-    const rawIpk = akademikData[0]?.disp_IPK;
-
-    if (rawIpk === undefined || rawIpk === null) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: "Kolom IPK tidak tersedia pada data akademik.",
-          ipk: null,
-        },
-        { status: 404 }
-      );
-    }
-
-    const ipkValue = parseFloat(String(rawIpk));
+    const ipkValue = parseFloat(String(ipk));
 
     if (isNaN(ipkValue)) {
       return NextResponse.json(
-        {
-          success: false,
-          error: `Nilai IPK tidak valid: "${rawIpk}"`,
-          ipk: null,
-        },
+        { success: false, error: `Nilai IPK tidak valid: "${ipk}"` },
         { status: 422 }
       );
     }
@@ -111,10 +45,9 @@ export async function POST(request: Request) {
     const { error: updateError } = await supabase
       .from("students")
       .update({ ipk: ipkValue })
-      .eq("nim", trimmedNrp);
+      .eq("nim", nrp.trim());
 
     if (updateError) {
-      // Jika kolom ipk belum ada, beri pesan yang jelas
       return NextResponse.json(
         {
           success: false,
@@ -125,7 +58,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // ─── Kembalikan hasil sukses ──────────────────────────────
     return NextResponse.json({
       success: true,
       ipk: ipkValue,

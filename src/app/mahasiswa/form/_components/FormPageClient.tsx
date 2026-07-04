@@ -43,24 +43,41 @@ export default function FormPageClient({ sessionNim, initialData }: FormPageClie
   const [submitError, setSubmitError] = useState("");
 
   // ─── IPK Sync State ──────────────────────────────────────────
-  const [ipk, setIpk] = useState<string | null>(initialData ? null : null);
+  const [ipk, setIpk] = useState<string | null>(null);
   const [isSyncingIpk, setIsSyncingIpk] = useState(true);
 
   useEffect(() => {
     const syncIpk = async () => {
       try {
-        const res = await fetch("/api/mahasiswa/sync-ipk", {
+        // Step 1: Fetch IPK langsung dari API kampus via browser
+        // (browser mahasiswa punya IP residensial, tidak diblokir ITENAS)
+        const ACTIVE_SEMESTER = "20252";
+        const apiUrl = `https://mahasiswa.itenas.ac.id/mahasiswa/AKT258-11-header-mahasiswa?nimhs=${sessionNim}&thsms=${ACTIVE_SEMESTER}`;
+
+        const kampusRes = await fetch(apiUrl);
+        const kampusData = await kampusRes.json();
+
+        if (!Array.isArray(kampusData) || kampusData.length === 0) {
+          setIpk(null);
+          return;
+        }
+
+        const rawIpk = kampusData[0]?.disp_IPK;
+        if (!rawIpk) {
+          setIpk(null);
+          return;
+        }
+
+        setIpk(String(rawIpk));
+
+        // Step 2: Simpan IPK ke database via API internal kita
+        await fetch("/api/mahasiswa/sync-ipk", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ nrp: sessionNim }),
+          body: JSON.stringify({ nrp: sessionNim, ipk: parseFloat(String(rawIpk)) }),
         });
-        const data = await res.json();
-        if (data.success && data.ipk !== null && data.ipk !== undefined) {
-          setIpk(String(data.ipk));
-        } else {
-          setIpk(null);
-        }
       } catch {
+        // Jika CORS atau network error, IPK tidak ditampilkan
         setIpk(null);
       } finally {
         setIsSyncingIpk(false);
