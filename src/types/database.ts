@@ -27,6 +27,7 @@ export interface Student {
   angkatan: number;
   email: string;
   whatsapp: string;
+  ipk: number | null;
   created_at: string;
 }
 
@@ -99,6 +100,7 @@ export type Database = {
           angkatan: number;
           email: string;
           whatsapp: string;
+          ipk: number | null;
           created_at: string;
         };
         Insert: {
@@ -107,6 +109,7 @@ export type Database = {
           angkatan: number;
           email: string;
           whatsapp: string;
+          ipk?: number | null;
           created_at?: string;
         };
         Update: {
@@ -115,6 +118,7 @@ export type Database = {
           angkatan?: number;
           email?: string;
           whatsapp?: string;
+          ipk?: number | null;
           created_at?: string;
         };
         Relationships: [

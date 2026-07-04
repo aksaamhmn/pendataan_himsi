@@ -5,7 +5,7 @@
  * Komponen client yang mengorkestrasi multi-step form.
  */
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useMultiStepForm, STEP_LABELS } from "@/hooks/useMultiStepForm";
 import Button from "@/components/ui/Button";
@@ -41,6 +41,33 @@ export default function FormPageClient({ sessionNim, initialData }: FormPageClie
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitStatus, setSubmitStatus] = useState<SubmitStatus>("idle");
   const [submitError, setSubmitError] = useState("");
+
+  // ─── IPK Sync State ──────────────────────────────────────────
+  const [ipk, setIpk] = useState<string | null>(initialData ? null : null);
+  const [isSyncingIpk, setIsSyncingIpk] = useState(true);
+
+  useEffect(() => {
+    const syncIpk = async () => {
+      try {
+        const res = await fetch("/api/mahasiswa/sync-ipk", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ nrp: sessionNim }),
+        });
+        const data = await res.json();
+        if (data.success && data.ipk !== null && data.ipk !== undefined) {
+          setIpk(String(data.ipk));
+        } else {
+          setIpk(null);
+        }
+      } catch {
+        setIpk(null);
+      } finally {
+        setIsSyncingIpk(false);
+      }
+    };
+    syncIpk();
+  }, [sessionNim]);
 
   // ─── Validation ──────────────────────────────────────────────
 
@@ -301,6 +328,8 @@ export default function FormPageClient({ sessionNim, initialData }: FormPageClie
               data={form.formData.biodata}
               onChange={handleBiodataChange}
               errors={errors}
+              ipk={ipk}
+              isSyncingIpk={isSyncingIpk}
             />
           )}
           {form.currentStep === 1 && (
