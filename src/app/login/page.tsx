@@ -112,7 +112,7 @@ export default function LoginPage() {
                 htmlFor="pin-login"
                 className="block text-sm font-medium text-gray-700 mb-1.5"
               >
-                PIN <span className="text-red-500">*</span>
+                PIN 
               </label>
               <input
                 id="pin-login"

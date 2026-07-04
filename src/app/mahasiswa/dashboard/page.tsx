@@ -7,6 +7,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
+import ClientDate from "@/components/ui/ClientDate";
 
 export const metadata = {
   title: "Dashboard — Portal Mahasiswa PSDM HIMSI",
@@ -126,14 +127,7 @@ export default async function StudentDashboard() {
                   Kamu sudah mengisi formulir pendataan PSDM HIMSI. Terima kasih atas partisipasimu!
                 </p>
                 <p className="text-xs text-gray-400 mt-2">
-                  Diisi pada:{" "}
-                  {new Date(student.created_at).toLocaleDateString("id-ID", {
-                    day: "numeric",
-                    month: "long",
-                    year: "numeric",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
+                  <ClientDate isoString={student.created_at} prefix="Diisi pada: " />
                 </p>
               </div>
             </div>

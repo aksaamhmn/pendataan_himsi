@@ -32,16 +32,20 @@ export default function StudentDataTable({ students }: StudentDataTableProps) {
   const [search, setSearch] = useState("");
 
   const filtered = useMemo(() => {
-    if (!search.trim()) return students;
-    const q = search.toLowerCase();
-    return students.filter(
-      (s) =>
-        s.nama.toLowerCase().includes(q) ||
-        s.nim.toLowerCase().includes(q) ||
-        s.email.toLowerCase().includes(q) ||
-        s.skills.some((sk) => sk.name.toLowerCase().includes(q)) ||
-        s.interests.some((i) => i.name.toLowerCase().includes(q))
-    );
+    let result = students;
+    if (search.trim()) {
+      const q = search.toLowerCase();
+      result = students.filter(
+        (s) =>
+          s.nama.toLowerCase().includes(q) ||
+          s.nim.toLowerCase().includes(q) ||
+          s.email.toLowerCase().includes(q) ||
+          s.skills.some((sk) => sk.name.toLowerCase().includes(q)) ||
+          s.interests.some((i) => i.name.toLowerCase().includes(q))
+      );
+    }
+    // Urutkan berdasarkan NIM terkecil ke terbesar
+    return [...result].sort((a, b) => a.nim.localeCompare(b.nim));
   }, [students, search]);
 
   return (
