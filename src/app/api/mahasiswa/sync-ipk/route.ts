@@ -36,7 +36,13 @@ export async function POST(request: Request) {
       const response = await fetch(apiUrl, {
         method: "GET",
         headers: {
-          Accept: "application/json",
+          "User-Agent":
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
+          Accept: "application/json, text/plain, */*",
+          "Accept-Language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7",
+          "Cache-Control": "no-cache",
+          Connection: "keep-alive",
+          Referer: "https://mahasiswa.itenas.ac.id/",
         },
         // Tidak cache agar selalu fresh
         cache: "no-store",
