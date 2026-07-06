@@ -22,7 +22,7 @@ export default async function StudentsPage() {
       {/* Page title */}
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
-          <h1 className="text-xl font-bold text-white">Data Mahasiswa</h1>
+          <h1 className="text-xl font-bold text-gray-900">Data Mahasiswa</h1>
           <p className="text-sm text-slate-500 mt-0.5">
             Daftar lengkap pendaftar beserta keterampilan, minat, dan aspirasi
           </p>
