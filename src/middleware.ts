@@ -13,7 +13,7 @@ import { isSupabaseConfigured } from "@/lib/supabase/config";
  */
 
 // Routes yang tidak memerlukan autentikasi
-const PUBLIC_ROUTES = ["/login", "/api"];
+const PUBLIC_ROUTES = ["/login", "/api", "/progress"];
 
 function isPublicRoute(pathname: string): boolean {
   return PUBLIC_ROUTES.some((route) => pathname.startsWith(route));
