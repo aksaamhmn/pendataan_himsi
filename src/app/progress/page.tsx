@@ -2,6 +2,7 @@ import { createClient } from "@supabase/supabase-js";
 import { createClient as createServerClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import Image from "next/image";
+import ProgressTableClient from "./_components/ProgressTableClient";
 
 export const dynamic = "force-dynamic";
 
@@ -136,62 +137,8 @@ export default async function ProgressPage() {
           </div>
         </div>
 
-        {/* Table */}
-        <div className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-200 bg-gray-50/50">
-            <h2 className="text-base font-semibold text-gray-900">Daftar Akun Mahasiswa</h2>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="border-b border-gray-200">
-                  <th className="px-6 py-3 text-xs font-semibold tracking-wider text-gray-500 uppercase bg-gray-50">NIM</th>
-                  <th className="px-6 py-3 text-xs font-semibold tracking-wider text-gray-500 uppercase bg-gray-50">Nama</th>
-                  <th className="px-6 py-3 text-xs font-semibold tracking-wider text-gray-500 uppercase bg-gray-50 text-center">Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200 bg-white">
-                {progressList.map((item) => (
-                  <tr key={item.nim} className="hover:bg-gray-50/50 transition-colors">
-                    <td className="px-6 py-4 text-sm font-medium text-gray-900 font-mono whitespace-nowrap">
-                      {item.nim}
-                    </td>
-                    <td className={`px-6 py-4 text-sm whitespace-nowrap ${item.status ? 'text-gray-900' : 'text-gray-400 italic'}`}>
-                      {item.nama}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex justify-center">
-                        {item.status ? (
-                          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-green-50 text-green-700 text-xs font-medium border border-green-200">
-                            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-                            </svg>
-                            Sudah
-                          </div>
-                        ) : (
-                          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-gray-100 text-gray-600 text-xs font-medium border border-gray-200">
-                            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
-                            </svg>
-                            Belum
-                          </div>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-                
-                {progressList.length === 0 && (
-                  <tr>
-                    <td colSpan={3} className="px-6 py-8 text-center text-sm text-gray-500">
-                      Belum ada data akun.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
+        {/* Table Client Component */}
+        <ProgressTableClient progressList={progressList} />
         
       </div>
     </div>
