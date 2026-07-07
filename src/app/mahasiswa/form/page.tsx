@@ -47,7 +47,7 @@ export default async function FormPage({
   const { data: student } = await supabase
     .from("students")
     .select(`
-      nim, nama, angkatan, email, whatsapp, ipk,
+      nim, nama, angkatan, email, email_kampus, whatsapp, ipk,
       student_skills(level, skills(id, name, category)),
       student_interests(interests(id, name, category)),
       aspirations(feedback_text)
@@ -112,6 +112,7 @@ export default async function FormPage({
         nama: student.nama,
         angkatan: student.angkatan,
         email: student.email,
+        email_kampus: student.email_kampus || "",
         whatsapp: student.whatsapp,
       },
       skills: skillsList

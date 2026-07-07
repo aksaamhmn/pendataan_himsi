@@ -23,6 +23,7 @@ function createInitialFormData(initialNim: string = ""): FormData {
       nama: "",
       angkatan: initialAngkatan,
       email: "",
+      email_kampus: "",
       whatsapp: "",
     },
     skills: [],

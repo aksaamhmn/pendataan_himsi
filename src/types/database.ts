@@ -26,6 +26,7 @@ export interface Student {
   nama: string;
   angkatan: number;
   email: string;
+  email_kampus: string;
   whatsapp: string;
   ipk: number | null;
   created_at: string;
@@ -99,6 +100,7 @@ export type Database = {
           nama: string;
           angkatan: number;
           email: string;
+          email_kampus: string;
           whatsapp: string;
           ipk: number | null;
           created_at: string;
@@ -108,6 +110,7 @@ export type Database = {
           nama: string;
           angkatan: number;
           email: string;
+          email_kampus?: string;
           whatsapp: string;
           ipk?: number | null;
           created_at?: string;
@@ -117,6 +120,7 @@ export type Database = {
           nama?: string;
           angkatan?: number;
           email?: string;
+          email_kampus?: string;
           whatsapp?: string;
           ipk?: number | null;
           created_at?: string;
@@ -313,6 +317,7 @@ export interface FormBiodata {
   nama: string;
   angkatan: number;
   email: string;
+  email_kampus: string;
   whatsapp: string;
 }
 

@@ -101,16 +101,29 @@ export default function StepBiodata({ data, onChange, errors, ipk, onIpkChange }
         </p>
       </div>
 
-      <Input
-        id="email"
-        label="Email"
-        type="email"
-        placeholder="nama@email.com"
-        value={data.email}
-        onChange={(e) => handleChange("email", e.target.value)}
-        error={errors.email}
-        required
-      />
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <Input
+          id="email"
+          label="Email Pribadi"
+          type="email"
+          placeholder="nama@email.com"
+          value={data.email}
+          onChange={(e) => handleChange("email", e.target.value)}
+          error={errors.email}
+          required
+        />
+        <Input
+          id="email-kampus"
+          label="Email Mahasiswa"
+          type="email"
+          placeholder="nim@mhs.itenas.ac.id"
+          value={data.email_kampus}
+          onChange={(e) => handleChange("email_kampus", e.target.value)}
+          error={errors.email_kampus}
+          helperText="Gunakan email kampus @mhs.itenas.ac.id"
+          required
+        />
+      </div>
 
       <Input
         id="whatsapp"

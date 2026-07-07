@@ -25,6 +25,7 @@ export interface StudentWithRelations {
   nama: string;
   angkatan: number;
   email: string;
+  email_kampus: string;
   whatsapp: string;
   ipk: number | null;
   created_at: string;
@@ -139,6 +140,7 @@ export async function getStudentsData(): Promise<StudentWithRelations[]> {
       nama,
       angkatan,
       email,
+      email_kampus,
       whatsapp,
       ipk,
       created_at,
@@ -163,6 +165,7 @@ export async function getStudentsData(): Promise<StudentWithRelations[]> {
       nama: s.nama,
       angkatan: s.angkatan,
       email: s.email,
+      email_kampus: s.email_kampus,
       whatsapp: s.whatsapp,
       ipk: s.ipk,
       created_at: s.created_at,
@@ -222,6 +225,7 @@ export async function getStudentByNim(nim: string): Promise<StudentWithRelations
       nama,
       angkatan,
       email,
+      email_kampus,
       whatsapp,
       ipk,
       created_at,
@@ -246,6 +250,7 @@ export async function getStudentByNim(nim: string): Promise<StudentWithRelations
     nama: student.nama,
     angkatan: student.angkatan,
     email: student.email,
+    email_kampus: student.email_kampus,
     whatsapp: student.whatsapp,
     ipk: student.ipk,
     created_at: student.created_at,

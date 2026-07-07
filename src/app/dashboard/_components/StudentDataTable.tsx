@@ -134,7 +134,7 @@ export default function StudentDataTable({ students }: StudentDataTableProps) {
                       <td className="px-5 py-3 hidden lg:table-cell">
                         {student.email ? (
                           <>
-                            <p className="text-xs text-gray-600 truncate max-w-[180px]">{student.email}</p>
+                            <p className="text-xs text-gray-600 truncate max-w-[180px]">{student.email_kampus || student.email}</p>
                             <p className="text-xs text-gray-500">{student.whatsapp || "—"}</p>
                           </>
                         ) : (

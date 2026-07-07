@@ -96,6 +96,7 @@ export async function POST(request: Request) {
           nama: body.biodata.nama,
           angkatan: body.biodata.angkatan,
           email: body.biodata.email,
+          email_kampus: body.biodata.email_kampus,
           whatsapp: body.biodata.whatsapp,
         })
         .eq("nim", body.biodata.nim);
@@ -131,6 +132,7 @@ export async function POST(request: Request) {
           nama: body.biodata.nama,
           angkatan: body.biodata.angkatan,
           email: body.biodata.email,
+          email_kampus: body.biodata.email_kampus,
           whatsapp: body.biodata.whatsapp,
         });
 

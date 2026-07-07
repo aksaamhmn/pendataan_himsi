@@ -57,8 +57,10 @@ export default function FormPageClient({ sessionNim, initialData }: FormPageClie
     if (!b.nama.trim()) errs.nama = "Nama lengkap wajib diisi";
     if (!b.nim.trim()) errs.nim = "NIM wajib diisi";
     else if (!/^\d{6,15}$/.test(b.nim.trim())) errs.nim = "NIM harus berupa angka (6-15 digit)";
-    if (!b.email.trim()) errs.email = "Email wajib diisi";
+    if (!b.email.trim()) errs.email = "Email pribadi wajib diisi";
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(b.email.trim())) errs.email = "Format email tidak valid";
+    if (!b.email_kampus.trim()) errs.email_kampus = "Email mahasiswa wajib diisi";
+    else if (!b.email_kampus.trim().toLowerCase().endsWith("@mhs.itenas.ac.id")) errs.email_kampus = "Email harus menggunakan domain @mhs.itenas.ac.id";
     if (!b.whatsapp.trim()) errs.whatsapp = "Nomor WhatsApp wajib diisi";
     else if (!/^(\+62|08)\d{8,13}$/.test(b.whatsapp.trim())) errs.whatsapp = "Format nomor tidak valid (08xx atau +628xx)";
 
