@@ -116,7 +116,7 @@ export default function StepBiodata({ data, onChange, errors, ipk, onIpkChange }
           id="email-kampus"
           label="Email Mahasiswa"
           type="email"
-          placeholder="nim@mhs.itenas.ac.id"
+          placeholder="nama@mhs.itenas.ac.id"
           value={data.email_kampus}
           onChange={(e) => handleChange("email_kampus", e.target.value)}
           error={errors.email_kampus}
